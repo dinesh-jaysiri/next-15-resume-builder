@@ -8,33 +8,34 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PersonalInforValues, personalInfoSchema } from "@/lib/schema";
+import { EditorFormProps } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
-function PersonalInfoForm() {
+function PersonalInfoForm({ resumeData, setResumeData }: EditorFormProps) {
   const form = useForm<PersonalInforValues>({
     resolver: zodResolver(personalInfoSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
-      jobTitle: "",
-      city: "",
-      country: "",
-      phone: "",
-      email: "",
+      firstName: resumeData.firstName || "",
+      lastName: resumeData.lastName || "",
+      jobTitle: resumeData.jobTitle || "",
+      city: resumeData.city || "",
+      country: resumeData.country || "",
+      phone: resumeData.phone || "",
+      email: resumeData.email || "",
     },
   });
 
   useEffect(() => {
-    const { unsubscribe } = form.watch(async () => {
+    const { unsubscribe } = form.watch(async (values) => {
       const isValid = await form.trigger();
       if (!isValid) return;
-      // Update resume data
+      setResumeData({ ...resumeData, ...values });
 
       return unsubscribe();
     });
-  }, [form]);
+  }, [form, resumeData, setResumeData]);
 
   return (
     <div className="mx-auto max-w-xl space-y-6">

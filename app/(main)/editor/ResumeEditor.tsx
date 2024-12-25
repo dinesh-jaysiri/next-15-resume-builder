@@ -1,16 +1,16 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import React from "react";
-import GeneralInfoForm from "./GeneralInfoForm";
-import PersonalInfoForm from "./PersonalInfoForm";
+import React, { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { steps } from "./steps";
 import Breadcrumbs from "./Breadcrumbs";
 import Footer from "./Footer";
+import { resumeSchemaValues } from "@/lib/schema";
 
 function ResumeEditor() {
   const searchParams = useSearchParams();
+
+  const [resumeData, setResumeData] = useState<resumeSchemaValues>({});
+
   const currentStep = searchParams.get("step") || steps[0].key;
 
   function setStep(key: string) {
@@ -34,15 +34,24 @@ function ResumeEditor() {
       </header>
       <main className="relative  grow">
         <div className="absolute bottom-0 top-0  flex w-full">
-          <div className="w-full  md:w-1/2 overflow-y-auto space-y-6 pt-6">
+          <div className="w-full  md:w-1/2 overflow-y-auto p-2 space-y-6 pt-6">
             <Breadcrumbs currentStep={currentStep} setCurrentStep={setStep} />
-            {FormComponent && <FormComponent />}
+            {FormComponent && (
+              <FormComponent
+                resumeData={resumeData}
+                setResumeData={setResumeData}
+              />
+            )}
           </div>
           <div className="grow md:border-r" />
-          <div className="hidden w-1/2 md:flex">right</div>
+          <div className="hidden w-1/2 md:flex">
+          <pre>
+            {JSON.stringify(resumeData, null, 2)}
+          </pre>
+          </div>
         </div>
       </main>
-      <Footer />
+      <Footer currentStep={currentStep} setCurrentStep={setStep} />
     </div>
   );
 }
