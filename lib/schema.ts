@@ -1,7 +1,10 @@
 import { z } from "zod";
 
+// Utility for optional strings, allowing empty strings or undefined values
 const optionalString = z.string().trim().optional().or(z.literal(""));
 
+// ----------------------------- General Information Schema -----------------------------
+// Schema for general information such as title and description
 export const generalInfoSchema = z.object({
   title: optionalString,
   description: optionalString,
@@ -9,6 +12,8 @@ export const generalInfoSchema = z.object({
 
 export type GeneralInfoValues = z.infer<typeof generalInfoSchema>;
 
+// ----------------------------- Personal Information Schema -----------------------------
+// Schema for personal information including photo, name, job title, and contact details
 export const personalInfoSchema = z.object({
   photo: z
     .custom<File | undefined>()
@@ -18,9 +23,8 @@ export const personalInfoSchema = z.object({
     )
     .refine(
       (file) => !file || file.size <= 1024 * 1024 * 4,
-      "File must be less then 4MB"
+      "File must be less than 4MB"
     ),
-
   firstName: optionalString,
   lastName: optionalString,
   jobTitle: optionalString,
@@ -32,6 +36,8 @@ export const personalInfoSchema = z.object({
 
 export type PersonalInforValues = z.infer<typeof personalInfoSchema>;
 
+// ----------------------------- Work Experience Schema -----------------------------
+// Schema for capturing work experience details, allowing multiple entries
 export const workExperienceSchema = z.object({
   workExperiences: z
     .array(
@@ -48,6 +54,8 @@ export const workExperienceSchema = z.object({
 
 export type WorkExperiencesValues = z.infer<typeof workExperienceSchema>;
 
+// ----------------------------- Education Schema -----------------------------
+// Schema for capturing education details, allowing multiple entries
 export const educationSchema = z.object({
   educations: z
     .array(
@@ -63,11 +71,32 @@ export const educationSchema = z.object({
 
 export type EducationValues = z.infer<typeof educationSchema>;
 
+// ----------------------------- Skill Schema -----------------------------
+// Schema for capturing skills as an array of strings
+export const skillSchema = z.object({
+  skills: z.array(z.string().trim()).optional(),
+});
+
+export type SkillValues = z.infer<typeof skillSchema>;
+
+// ----------------------------- Summary Schema -----------------------------
+// Schema for capturing a brief summary
+export const summarySchema = z.object({
+  summary: optionalString,
+});
+
+export type SummaryValues = z.infer<typeof summarySchema>;
+
+// ----------------------------- Resume Schema -----------------------------
+// Combined schema for the entire resume, merging general info, personal info, work experience,
+// education, and skills into a single schema
 export const resumeSchema = z.object({
   ...generalInfoSchema.shape,
   ...personalInfoSchema.shape,
   ...workExperienceSchema.shape,
   ...educationSchema.shape,
+  ...skillSchema.shape,
+  ...summarySchema.shape
 });
 
 export type resumeSchemaValues = Omit<z.infer<typeof resumeSchema>, "photo"> & {
