@@ -96,7 +96,10 @@ export const resumeSchema = z.object({
   ...workExperienceSchema.shape,
   ...educationSchema.shape,
   ...skillSchema.shape,
-  ...summarySchema.shape
+  ...summarySchema.shape,
+  colorHex:optionalString,
+  borderStyle:optionalString
+
 });
 
 export type resumeSchemaValues = Omit<z.infer<typeof resumeSchema>, "photo"> & {
