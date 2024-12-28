@@ -44,8 +44,17 @@ interface ResumeSectionProps {
 }
 
 function PersonalInfoHeader({ resumeData }: ResumeSectionProps) {
-  const { photo, firstName, lastName, jobTitle, city, country, phone, email } =
-    resumeData;
+  const {
+    photo,
+    firstName,
+    lastName,
+    jobTitle,
+    city,
+    country,
+    phone,
+    email,
+    colorHex,
+  } = resumeData;
 
   const [photoSrc, setPhotoSrc] = useState(photo instanceof File ? "" : photo);
 
@@ -70,10 +79,22 @@ function PersonalInfoHeader({ resumeData }: ResumeSectionProps) {
 
       <div className="space-y-2.5">
         <div className="space-y-1">
-          <p className="text-3xl font-bold">
+          <p
+            style={{
+              color: colorHex,
+            }}
+            className="text-3xl font-bold"
+          >
             {firstName} {lastName}
           </p>
-          <p className="font-medium">{jobTitle}</p>
+          <p
+            className="font-medium"
+            style={{
+              color: colorHex,
+            }}
+          >
+            {jobTitle}
+          </p>
         </div>
 
         <p className="text-xs text-gray-500">
@@ -89,15 +110,28 @@ function PersonalInfoHeader({ resumeData }: ResumeSectionProps) {
 }
 
 function SummarySection({ resumeData }: ResumeSectionProps) {
-  const { summary } = resumeData;
+  const { summary, colorHex } = resumeData;
 
   if (!summary) return null;
 
   return (
     <div>
-      <Separator className="my-3" orientation="horizontal" />
+      <Separator
+        style={{
+          background: colorHex,
+        }}
+        className="my-3"
+        orientation="horizontal"
+      />
       <div className="space-y-3 break-inside-avoid">
-        <p className="text-lg font-semibold">Professional profile</p>
+        <p
+          className="text-lg font-semibold"
+          style={{
+            color: colorHex,
+          }}
+        >
+          Professional profile
+        </p>
         <div className="whitespace-pre-line text-sm">{summary}</div>
       </div>
     </div>
@@ -105,7 +139,7 @@ function SummarySection({ resumeData }: ResumeSectionProps) {
 }
 
 function WorkExperienceSection({ resumeData }: ResumeSectionProps) {
-  const { workExperiences } = resumeData;
+  const { workExperiences, colorHex } = resumeData;
 
   const workExperiencesNotEmpty = workExperiences?.filter(
     (exp) => Object.values(exp).filter(Boolean).length > 0
@@ -115,12 +149,30 @@ function WorkExperienceSection({ resumeData }: ResumeSectionProps) {
 
   return (
     <>
-      <Separator className="my-3" orientation="horizontal" />
+      <Separator
+        className="my-3"
+        orientation="horizontal"
+        style={{
+          background: colorHex,
+        }}
+      />
       <div className="space-y-3">
-        <p className="text-lg font-semibold">Work experience</p>
+        <p
+          className="text-lg font-semibold"
+          style={{
+            color: colorHex,
+          }}
+        >
+          Work experience
+        </p>
         {workExperiencesNotEmpty.map((exp, index) => (
           <div key={index} className="break-inside-avoid space-y-1">
-            <div className="flex items-center justify-between text-sm font-semibold">
+            <div
+              className="flex items-center justify-between text-sm font-semibold"
+              style={{
+                color: colorHex,
+              }}
+            >
               <span>{exp.position}</span>
               {exp.startDate && (
                 <span>
@@ -139,7 +191,7 @@ function WorkExperienceSection({ resumeData }: ResumeSectionProps) {
 }
 
 function EducatioinSection({ resumeData }: ResumeSectionProps) {
-  const { educations } = resumeData;
+  const { educations, colorHex } = resumeData;
 
   const educationsNotEmpty = educations?.filter(
     (edu) => Object.values(edu).filter(Boolean).length > 0
@@ -149,12 +201,30 @@ function EducatioinSection({ resumeData }: ResumeSectionProps) {
 
   return (
     <>
-      <Separator className="my-3" orientation="horizontal" />
+      <Separator
+        className="my-3"
+        orientation="horizontal"
+        style={{
+          background: colorHex,
+        }}
+      />
       <div className="space-y-3">
-        <p className="text-lg font-semibold">Education</p>
+        <p
+          className="text-lg font-semibold"
+          style={{
+            color: colorHex,
+          }}
+        >
+          Education
+        </p>
         {educationsNotEmpty.map((edu, index) => (
           <div key={index} className="break-inside-avoid space-y-1">
-            <div className="flex items-center justify-between text-sm font-semibold">
+            <div
+              className="flex items-center justify-between text-sm font-semibold"
+              style={{
+                color: colorHex,
+              }}
+            >
               <span>{edu.degree}</span>
               {edu.startDate && (
                 <span>
@@ -176,18 +246,40 @@ function EducatioinSection({ resumeData }: ResumeSectionProps) {
 }
 
 function SkillsSection({ resumeData }: ResumeSectionProps) {
-  const { skills } = resumeData;
+  const { skills,colorHex } = resumeData;
 
   if (!skills?.length) return null;
 
   return (
     <>
-      <Separator className="my-3" orientation="horizontal" />
+      <Separator
+        className="my-3"
+        orientation="horizontal"
+        style={{
+          background: colorHex,
+        }}
+      />
       <div className="space-y-3">
-        <p className="text-lg font-semibold">Skills</p>
+        <p
+          className="text-lg font-semibold"
+          style={{
+            color: colorHex,
+          }}
+        >
+          Skills
+        </p>
         <div className="flex break-inside-avoid flex-wrap gap-2">
           {skills.map((skl, index) => (
-            <Badge className="text-black border-black" variant="outline" key={index}>{skl}</Badge>
+            <Badge
+              style={{
+                borderColor: colorHex,
+              }}
+              className="text-black border-black"
+              variant="outline"
+              key={index}
+            >
+              {skl}
+            </Badge>
           ))}
         </div>
       </div>
