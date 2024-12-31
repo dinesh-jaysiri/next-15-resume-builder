@@ -6,6 +6,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Separator } from "./ui/separator";
 import { formatDate } from "date-fns";
 import { Badge } from "./ui/badge";
+import { BorderStyles } from "@/app/(main)/editor/BorderStyleButton";
 
 interface Props {
   resumeData: resumeSchemaValues;
@@ -54,9 +55,17 @@ function PersonalInfoHeader({ resumeData }: ResumeSectionProps) {
     phone,
     email,
     colorHex,
+    borderStyle,
   } = resumeData;
 
   const [photoSrc, setPhotoSrc] = useState(photo instanceof File ? "" : photo);
+
+  const borderRadius =
+    borderStyle === BorderStyles.SQUARE
+      ? "0px"
+      : borderStyle === BorderStyles.CIRCLE
+      ? "100%"
+      : "10%";
 
   useEffect(() => {
     const objectUrl = photo instanceof File ? URL.createObjectURL(photo) : "";
@@ -74,6 +83,9 @@ function PersonalInfoHeader({ resumeData }: ResumeSectionProps) {
           height={100}
           alt="Author photo"
           className="aspect-square object-cover"
+          style={{
+            borderRadius,
+          }}
         />
       )}
 
@@ -246,7 +258,14 @@ function EducatioinSection({ resumeData }: ResumeSectionProps) {
 }
 
 function SkillsSection({ resumeData }: ResumeSectionProps) {
-  const { skills,colorHex } = resumeData;
+  const { skills, colorHex, borderStyle } = resumeData;
+
+  const borderRadius =
+    borderStyle === BorderStyles.SQUARE
+      ? "0px"
+      : borderStyle === BorderStyles.CIRCLE
+      ? "10px"
+      : "8px";
 
   if (!skills?.length) return null;
 
@@ -273,6 +292,7 @@ function SkillsSection({ resumeData }: ResumeSectionProps) {
             <Badge
               style={{
                 borderColor: colorHex,
+                borderRadius,
               }}
               className="text-black border-black"
               variant="outline"

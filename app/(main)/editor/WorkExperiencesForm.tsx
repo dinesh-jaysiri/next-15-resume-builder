@@ -16,6 +16,26 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { GripHorizontal } from "lucide-react";
 import React, { useEffect } from "react";
 import { useFieldArray, useForm, UseFormReturn } from "react-hook-form";
+import {
+  closestCenter,
+  DndContext,
+  DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
+import { CSS } from "@dnd-kit/utilities";
+import { cn } from "@/lib/utils";
 
 function WorkExperiencesForm({ resumeData, setResumeData }: EditorFormProps) {
   const form = useForm<WorkExperiencesValues>({
@@ -25,10 +45,29 @@ function WorkExperiencesForm({ resumeData, setResumeData }: EditorFormProps) {
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, move } = useFieldArray({
     control: form.control,
     name: "workExperiences",
   });
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = fields.findIndex((field) => field.id === active.id);
+      const newIndex = fields.findIndex((field) => field.id === over.id);
+
+      move(oldIndex, newIndex);
+
+      return arrayMove(fields, oldIndex, newIndex);
+    }
+  }
 
   useEffect(() => {
     const { unsubscribe } = form.watch(async (values) => {
@@ -52,15 +91,28 @@ function WorkExperiencesForm({ resumeData, setResumeData }: EditorFormProps) {
         <p className="text-sm text-muted-foreground">Tell us about yourself.</p>
       </div>
       <Form {...form}>
-        <form className="space-y-6">
-          {fields.map((field, index) => (
-            <WorkExperienceItem
-              key={field.id}
-              index={index}
-              form={form}
-              remove={remove}
-            />
-          ))}
+        <form className="space-y-3">
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+            modifiers={[restrictToVerticalAxis]}
+          >
+            <SortableContext
+              items={fields}
+              strategy={verticalListSortingStrategy}
+            >
+              {fields.map((field, index) => (
+                <WorkExperienceItem
+                  id={field.id}
+                  key={field.id}
+                  index={index}
+                  form={form}
+                  remove={remove}
+                />
+              ))}
+            </SortableContext>
+          </DndContext>
           <div className="flex justify-center">
             <Button
               onClick={() =>
@@ -86,17 +138,46 @@ function WorkExperiencesForm({ resumeData, setResumeData }: EditorFormProps) {
 export default WorkExperiencesForm;
 
 interface WorkExperienceItemProps {
+  id: string;
   form: UseFormReturn<WorkExperiencesValues>;
   index: number;
   remove: (index: number) => void;
 }
 
-function WorkExperienceItem({ form, index, remove }: WorkExperienceItemProps) {
+function WorkExperienceItem({
+  id,
+  form,
+  index,
+  remove,
+}: WorkExperienceItemProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
   return (
-    <div className="space-y-3 border rounded-md bg-background p-3">
+    <div
+      className={cn(
+        "space-y-3 border rounded-md bg-background p-3",
+        isDragging && "shadow-xl z-50 cursor-grab relative"
+      )}
+      ref={setNodeRef}
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition,
+      }}
+    >
       <div className="flex items-center justify-between gap-2">
         <span className="font-semibold">Work experience {index + 1}</span>
-        <GripHorizontal className="size-5 cursor-grab text-muted-foreground" />
+        <GripHorizontal
+          className="size-5 cursor-grab text-muted-foreground focus: outline-none"
+          {...attributes}
+          {...listeners}
+        />
       </div>
 
       <FormField
@@ -181,7 +262,7 @@ function WorkExperienceItem({ form, index, remove }: WorkExperienceItemProps) {
           </FormItem>
         )}
       />
-      <Button variant="destructive" type='button' onClick={()=> remove(index)}  >
+      <Button variant="destructive" type="button" onClick={() => remove(index)}>
         Remove
       </Button>
     </div>
