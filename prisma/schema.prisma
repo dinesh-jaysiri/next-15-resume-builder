@@ -106,7 +106,7 @@ model Resume {
   summary     String?
   firstName   String?
   lastName    String?
-  jobtitle    String?
+  jobTitle    String?
   city        String?
   country     String?
   phone       String?

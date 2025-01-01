@@ -3,7 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import ThemeProvider from "@/app/ThemeProvider";
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { Toaster } from "@/components/ui/toaster";
 import { auth } from "@/auth";
 import { SessionProvider } from "next-auth/react";
 
@@ -37,6 +38,7 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <Sonner />
             <Toaster />
             {children}
           </ThemeProvider>

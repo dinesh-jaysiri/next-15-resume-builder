@@ -16,10 +16,8 @@ function ResumeEditor() {
   const [resumeData, setResumeData] = useState<resumeSchemaValues>({});
   const [showSmResumePreview, setShowSmResumePreview] = useState(false);
 
-  const { isSaving, hasUnSavedChanges } = useAutoSaveResume(resumeData);
-
-
-  useUnloadWarning(hasUnSavedChanges);
+  const { isSaving, hasUnsavedChanges } = useAutoSaveResume(resumeData);
+  useUnloadWarning(hasUnsavedChanges);
   const currentStep = searchParams.get("step") || steps[0].key;
 
   function setStep(key: string) {

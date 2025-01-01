@@ -9,9 +9,10 @@ import path from "path";
 export async function saveResume(values: resumeSchemaValues) {
   const { id } = values;
 
+  
+
   const { photo, workExperiences, educations, ...resumeValues } =
     resumeSchema.parse(values);
-
   const session = await auth();
 
   if (!session?.user) throw new Error("User not authenticatied ");
@@ -19,7 +20,7 @@ export async function saveResume(values: resumeSchemaValues) {
   // TODO: check  resume count for non-premium user
 
   const existingResume = id
-    ? await prisma.resume.findUnique({ where: { id: session.user.id } })
+    ? await prisma.resume.findUnique({ where: { id, userId: session.user.id } })
     : null;
 
   if (id && !existingResume) {
@@ -32,7 +33,6 @@ export async function saveResume(values: resumeSchemaValues) {
     if (existingResume?.photoUrl) {
       await del(existingResume.photoUrl);
     }
-
     const blob = await put(`resume_photos/${path.extname(photo.name)}`, photo, {
       access: "public",
     });
