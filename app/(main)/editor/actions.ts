@@ -4,7 +4,6 @@ import { auth } from "@/auth";
 import { resumeSchema, resumeSchemaValues } from "@/lib/schema";
 import prisma from "@/prisma/client";
 import { del, put } from "@vercel/blob";
-import { AwardIcon } from "lucide-react";
 import path from "path";
 
 export async function saveResume(values: resumeSchemaValues) {
@@ -63,7 +62,7 @@ export async function saveResume(values: resumeSchemaValues) {
         },
         educations: {
           deleteMany: {},
-          create: workExperiences?.map((edu) => ({
+          create: educations?.map((edu) => ({
             ...edu,
             startDate: edu.startDate ? new Date(edu.startDate) : undefined,
             endDate: edu.endDate ? new Date(edu.endDate) : undefined,
@@ -85,7 +84,7 @@ export async function saveResume(values: resumeSchemaValues) {
           })),
         },
         educations: {
-          create: workExperiences?.map((edu) => ({
+          create: educations?.map((edu) => ({
             ...edu,
             startDate: edu.startDate ? new Date(edu.startDate) : undefined,
             endDate: edu.endDate ? new Date(edu.endDate) : undefined,
