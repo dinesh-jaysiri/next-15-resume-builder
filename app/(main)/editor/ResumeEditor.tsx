@@ -9,11 +9,17 @@ import ResumePreviewSection from "./ResumePreviewSection";
 import { cn } from "@/lib/utils";
 import useAutoSaveResume from "./useAutoSaveResume";
 import useUnloadWarning from "@/hooks/useUnloadWarning";
+import { mapToResumeValues, ResumeServerData } from "@/lib/types";
 
-function ResumeEditor() {
+interface Props {
+  resumeToEdit: ResumeServerData | null;
+}
+function ResumeEditor({ resumeToEdit }: Props) {
   const searchParams = useSearchParams();
 
-  const [resumeData, setResumeData] = useState<resumeSchemaValues>({});
+  const [resumeData, setResumeData] = useState<resumeSchemaValues>(
+    resumeToEdit ? mapToResumeValues(resumeToEdit) : {}
+  );
   const [showSmResumePreview, setShowSmResumePreview] = useState(false);
 
   const { isSaving, hasUnsavedChanges } = useAutoSaveResume(resumeData);
