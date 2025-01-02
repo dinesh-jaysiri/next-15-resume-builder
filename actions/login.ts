@@ -5,7 +5,6 @@ import z from "zod";
 import { signIn } from "@/auth";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { AuthError } from "next-auth";
-import { isRedirectError } from "next/dist/client/components/redirect";
 import { getUserByEmail } from "@/prisma/data/user";
 import { generateVerificationToken } from "@/prisma/data/verficationToken";
 import { sendTwoFactorTokenEmail, sendVerificationEmail } from "@/lib/mail";
@@ -15,6 +14,7 @@ import {
 } from "@/prisma/data/twoFactorConfirmation";
 import { getTwoFactorTokenByEmail } from "@/prisma/data/twoFactor";
 import prisma from "@/prisma/client";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 export const loginAction = async (
   value: z.infer<typeof LoginSchema>,
