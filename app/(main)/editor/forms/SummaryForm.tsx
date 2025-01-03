@@ -8,11 +8,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {  summarySchema, SummaryValues } from "@/lib/schema";
+import { summarySchema, SummaryValues } from "@/lib/schema";
 import { EditorFormProps } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import GenerateSummaryButton from "./GenerateSummaryButton";
 
 function SummaryForm({ resumeData, setResumeData }: EditorFormProps) {
   const form = useForm<SummaryValues>({
@@ -33,10 +34,13 @@ function SummaryForm({ resumeData, setResumeData }: EditorFormProps) {
   }, [form, resumeData, setResumeData]);
 
   return (
-    <div className="mx-auto max-w-xl space-y-6"> 
+    <div className="mx-auto max-w-xl space-y-6">
       <div className="space-y-1.5 text-center">
         <h2 className="text-xl font-semibold">Professional summary</h2>
-        <p className="text-sm text-muted-foreground">Write a short intrudction for your resume or let the AI generate one from you enterd data.</p>
+        <p className="text-sm text-muted-foreground">
+          Write a short intrudction for your resume or let the AI generate one
+          from you enterd data.
+        </p>
       </div>
 
       <Form {...form}>
@@ -48,9 +52,18 @@ function SummaryForm({ resumeData, setResumeData }: EditorFormProps) {
               <FormItem>
                 <FormLabel className="sr-only">Summary</FormLabel>
                 <FormControl>
-                  <Textarea {...field} placeholder="A brief, engaging text about yourself" />
+                  <Textarea
+                    {...field}
+                    placeholder="A brief, engaging text about yourself"
+                  />
                 </FormControl>
                 <FormMessage />
+                <GenerateSummaryButton
+                  resumeData={resumeData}
+                  onSummaryGenerated={(summary) =>
+                    form.setValue("summary", summary)
+                  }
+                />
               </FormItem>
             )}
           />
