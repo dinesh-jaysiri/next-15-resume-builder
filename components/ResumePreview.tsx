@@ -1,3 +1,4 @@
+"use client";
 import useDimensions from "@/hooks/useDimensions";
 import { resumeSchemaValues } from "@/lib/schema";
 import { cn } from "@/lib/utils";
@@ -10,10 +11,11 @@ import { BorderStyles } from "@/app/(main)/editor/BorderStyleButton";
 
 interface Props {
   resumeData: resumeSchemaValues;
+  contentRef?: React.Ref<HTMLDivElement>;
   className?: string;
 }
 
-function ResumePreview({ resumeData, className }: Props) {
+function ResumePreview({ resumeData, className, contentRef }: Props) {
   const containerRef = useRef(null);
   const { width } = useDimensions(containerRef);
   return (
@@ -25,6 +27,8 @@ function ResumePreview({ resumeData, className }: Props) {
       )}
     >
       <div
+        id="resumePreviewContent"
+        ref={contentRef}
         style={{ zoom: (1 / 749) * width }}
         className={cn("space-y-6 p-6", !width && "invisible")}
       >
