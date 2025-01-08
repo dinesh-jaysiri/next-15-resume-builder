@@ -15,6 +15,7 @@ CREATE TABLE "User" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "twoFactorConfirmationId" TEXT,
+    "stripeId" TEXT,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -85,7 +86,7 @@ CREATE TABLE "Resume" (
     "title" TEXT,
     "description" TEXT,
     "photoUrl" TEXT,
-    "coloerHex" TEXT NOT NULL DEFAULT '#000000',
+    "colorHex" TEXT NOT NULL DEFAULT '#000000',
     "borderStyle" TEXT NOT NULL DEFAULT 'squircle',
     "summary" TEXT,
     "firstName" TEXT,
@@ -131,11 +132,29 @@ CREATE TABLE "Education" (
     CONSTRAINT "Education_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "UserSubscription" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "stripeCustomerId" TEXT NOT NULL,
+    "stripeSubscriptionId" TEXT NOT NULL,
+    "stripePriceId" TEXT NOT NULL,
+    "stripeCurrentPeriodEnd" TIMESTAMP(3) NOT NULL,
+    "stripeCancelAtPeriodEnd" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "UserSubscription_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_stripeId_key" ON "User"("stripeId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Account_userId_key" ON "Account"("userId");
@@ -166,6 +185,15 @@ CREATE UNIQUE INDEX "TwoFactorToken_email_token_key" ON "TwoFactorToken"("email"
 
 -- CreateIndex
 CREATE UNIQUE INDEX "TwoFactorConfirmation_userId_key" ON "TwoFactorConfirmation"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "UserSubscription_userId_key" ON "UserSubscription"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "UserSubscription_stripeCustomerId_key" ON "UserSubscription"("stripeCustomerId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "UserSubscription_stripeSubscriptionId_key" ON "UserSubscription"("stripeSubscriptionId");
 
 -- AddForeignKey
 ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
