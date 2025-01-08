@@ -93,6 +93,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       token.isOAuth = !!existingAccount as boolean;
       token.role = existingUser.role as UserRole;
       token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled as boolean;
+      token.stripeId = existingUser.stripeId as string
       return token;
     },
     async session({ session, token }) {
@@ -109,6 +110,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.name = token.name;
         session.user.email = token.email as string;
         session.user.isOAuth = token.isOAuth as boolean;
+        session.user.stripeId = token.stripeId as string;
       }
 
       return session;

@@ -9,6 +9,9 @@ import React, { useState } from 'react';
 import { useForm, Form, FormProvider } from 'react-hook-form';
 import { generateWorkExperience } from './actions';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useSubscriptionLevel } from '../../SubscriptionLevelProvider';
+import usePremiumModal from '@/hooks/usePremiumModal';
+import { canUseAiTools } from '@/lib/permission';
 
 interface GenerateWorkExperienceButtonProps {
   onWorkExperienceGenerated: (workExperience: WorkExperience) => void;
@@ -17,9 +20,8 @@ interface GenerateWorkExperienceButtonProps {
 export default function GenerateWorkExperienceButton({
   onWorkExperienceGenerated,
 }: GenerateWorkExperienceButtonProps) {
-//   const subscriptionLevel = useSubscriptionLevel();
-
-//   const premiumModal = usePremiumModal();
+  const subscriptionLevel = useSubscriptionLevel();
+  const primiumModle = usePremiumModal();
 
   const [showInputDialog, setShowInputDialog] = useState(false);
 
@@ -29,10 +31,10 @@ export default function GenerateWorkExperienceButton({
         variant="outline"
         type="button"
         onClick={() => {
-        //   if (!canUseAITools(subscriptionLevel)) {
-        //     premiumModal.setOpen(true);
-        //     return;
-        //   }
+          if (!canUseAiTools(subscriptionLevel)) {
+            primiumModle.setOpen(true);
+            return;
+          }
           setShowInputDialog(true);
         }}
       >

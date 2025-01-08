@@ -1,6 +1,7 @@
 "use server";
 import { auth } from "@/auth";
 import openai from "@/lib/openai";
+import { canUseAiTools } from "@/lib/permission";
 import {
   GenerateSummaryInput,
   generateSummarySchema,
@@ -8,10 +9,21 @@ import {
   generateWorkExperienceSchema,
   WorkExperience,
 } from "@/lib/schema";
+import { getUserSubscriptionLevel } from "@/lib/subscription";
 
 export async function generateSummary(input: GenerateSummaryInput) {
-  const { jobTitle, workExperiences, educations, skills } =
-    generateSummarySchema.parse(input);
+  const seesion = await auth();
+  if (!seesion?.user) {
+    throw new Error("Faild to generate AI response");
+  }
+
+  const subscriptionLevel = await getUserSubscriptionLevel(seesion?.user.id!);
+
+  if (!canUseAiTools(subscriptionLevel)){
+    throw new Error("Not able to use AI tools")
+  }
+    const { jobTitle, workExperiences, educations, skills } =
+      generateSummarySchema.parse(input);
 
   const systemMessage = `
     You are a job resume generator AI. Your task is to write a professional introduction summary for a resume given the user's provided data.

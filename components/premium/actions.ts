@@ -8,12 +8,18 @@ export async function createCheckoutSessioin(PriceId: string) {
 
   if (!authSession?.user) throw new Error("Unauthenticated");
 
+  const stripeCustomerId = authSession.user.stripeId;
+
   const seesion = await stripe.checkout.sessions.create({
     line_items: [{ price: PriceId, quantity: 1 }],
     mode: "subscription",
     success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/billing/success`,
     cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/billing`,
-    customer_email: authSession.user.email!,
+    customer: stripeCustomerId || undefined,
+    customer_email: stripeCustomerId ? undefined : authSession.user.email!,
+    metadata: {
+      userId: authSession.user.id!,
+    },
     subscription_data: {
       metadata: {
         userId: authSession.user.id!,
@@ -30,9 +36,9 @@ export async function createCheckoutSessioin(PriceId: string) {
     },
   });
 
-  if(!seesion.url) {
-    throw new Error("faild to create checkout session")
+  if (!seesion.url) {
+    throw new Error("faild to create checkout session");
   }
 
-  return seesion.url
+  return seesion.url;
 }

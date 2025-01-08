@@ -1,7 +1,9 @@
 "use server";
 
 import { auth } from "@/auth";
+import { canCreateResume, canUseCustomizations } from "@/lib/permission";
 import { resumeSchema, resumeSchemaValues } from "@/lib/schema";
+import { getUserSubscriptionLevel } from "@/lib/subscription";
 import prisma from "@/prisma/client";
 import { del, put } from "@vercel/blob";
 import path from "path";
@@ -9,15 +11,23 @@ import path from "path";
 export async function saveResume(values: resumeSchemaValues) {
   const { id } = values;
 
-  
-
   const { photo, workExperiences, educations, ...resumeValues } =
     resumeSchema.parse(values);
   const session = await auth();
 
   if (!session?.user) throw new Error("User not authenticatied ");
 
-  // TODO: check  resume count for non-premium user
+  const subscriptionLevel = await getUserSubscriptionLevel(session.user.id!);
+
+  if(!id){
+    const resumeCount = await prisma.resume.count({
+      where:{userId:session.user.id}
+    })
+
+    if(!canCreateResume(subscriptionLevel, resumeCount)){
+      throw new Error("Maximum resume count reached for this subscription level.")
+    }
+  }
 
   const existingResume = id
     ? await prisma.resume.findUnique({ where: { id, userId: session.user.id } })
@@ -25,6 +35,12 @@ export async function saveResume(values: resumeSchemaValues) {
 
   if (id && !existingResume) {
     throw new Error("Resume not found");
+  }
+
+  const hasCustomizations = (resumeValues.borderStyle && resumeValues.borderStyle !== existingResume?.borderStyle) || (resumeValues.colorHex && resumeValues.colorHex !== existingResume?.colorHex)
+
+  if(hasCustomizations && canUseCustomizations(subscriptionLevel)) {
+    throw new Error("Customizatioins not allowed for this subscription level")
   }
 
   let newPhotoUrl: string | undefined | null = undefined;

@@ -4,6 +4,9 @@ import { PopoverContent } from "@radix-ui/react-popover";
 import { PaletteIcon } from "lucide-react";
 import React, { useState } from "react";
 import { Color, ColorChangeHandler, TwitterPicker } from "react-color";
+import { useSubscriptionLevel } from "../SubscriptionLevelProvider";
+import { canUseCustomizations } from "@/lib/permission";
+import usePremiumModal from "@/hooks/usePremiumModal";
 
 interface Props {
   color: Color | undefined;
@@ -11,7 +14,10 @@ interface Props {
 }
 
 function ColorPicker({ color, onChange }: Props) {
+  const subscriptionLevel = useSubscriptionLevel();
+   const primiumModle = usePremiumModal();
   const [showPopover, setShowPopover] = useState(false);
+ 
   return (
     <Popover open={showPopover} onOpenChange={setShowPopover}>
       <PopoverTrigger asChild>
@@ -19,7 +25,12 @@ function ColorPicker({ color, onChange }: Props) {
           title="Change resume color"
           size="icon"
           variant="outline"
-          onClick={() => setShowPopover(true)}
+          onClick={() => {
+            if (!canUseCustomizations(subscriptionLevel)) {
+              primiumModle.setOpen(true);
+            }
+            setShowPopover(true);
+          }}
         >
           <PaletteIcon className="size-5" />
         </Button>

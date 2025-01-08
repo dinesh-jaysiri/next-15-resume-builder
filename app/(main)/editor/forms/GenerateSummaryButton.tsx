@@ -3,6 +3,9 @@ import { useToast } from "@/hooks/use-toast";
 import { resumeSchemaValues } from "@/lib/schema";
 import React, { useState } from "react";
 import { generateSummary } from "./actions";
+import { canUseAiTools } from "@/lib/permission";
+import { useSubscriptionLevel } from "../../SubscriptionLevelProvider";
+import usePremiumModal from "@/hooks/usePremiumModal";
 
 interface Props {
   resumeData: resumeSchemaValues;
@@ -12,9 +15,14 @@ interface Props {
 function GenerateSummaryButton({ resumeData, onSummaryGenerated }: Props) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const subscriptionLevel = useSubscriptionLevel();
+  const primiumModle = usePremiumModal();
 
   async function handleClick() {
-    // TODO: Block for non-premium users
+    if (!canUseAiTools(subscriptionLevel)) {
+      primiumModle.setOpen(true);
+      return;
+    }
 
     try {
       setIsLoading(true);
