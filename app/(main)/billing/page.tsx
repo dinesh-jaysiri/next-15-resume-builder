@@ -1,14 +1,56 @@
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import stripe from "@/lib/stripe";
 
-export default function Page() {
+import { formatDate } from "date-fns";
+import { Metadata } from "next";
+import Stripe from "stripe";
+import GetSubscriptionButton from "./GetSubscriptionButton";
+import ManageSubscriptionButton from "./MangeSubscriptonButton";
+import { auth } from "@/auth";
+import prisma from "@/prisma/client";
+
+export const metadata: Metadata = {
+  title: "Billing",
+};
+
+export default async function Page() {
+  const authSession = await auth();
+
+  if (!authSession?.user) {
+    return null;
+  }
+
+  const subscription = await prisma.userSubscription.findUnique({
+    where: { userId: authSession.user.id },
+  });
+
+  const priceInfo = subscription
+    ? await stripe.prices.retrieve(subscription.stripePriceId, {
+        expand: ["product"],
+      })
+    : null;
+
   return (
-    <main className="mx-auto max-w-7xl space-y-6 py-6 text-center">
-      <h1 className="text-3xl font-bold">Billing Success</h1>
-      <p>The checkout was successful and your Pro account has been activated</p>
-      <Button asChild>
-        <Link href={"/resumes"}>Go to resumes</Link>
-      </Button>
+    <main className="mx-auto w-full max-w-7xl space-y-6 px-3 py-6">
+      <h1 className="text-3xl font-bold">Billing</h1>
+      <p>
+        Your current plan:{" "}
+        <span className="font-bold">
+          {priceInfo ? (priceInfo.product as Stripe.Product).name : "Free"}
+        </span>
+      </p>
+      {subscription ? (
+        <>
+          {subscription.stripeCancelAtPeriodEnd && (
+            <p className="text-destructive">
+              Your subscription will be canceled on{" "}
+              {formatDate(subscription.stripeCurrentPeriodEnd, "MMMM dd, yyyy")}
+            </p>
+          )}
+          <ManageSubscriptionButton />
+        </>
+      ) : (
+        <GetSubscriptionButton />
+      )}
     </main>
   );
 }
