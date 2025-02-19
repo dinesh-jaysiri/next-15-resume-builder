@@ -2,8 +2,7 @@
 
 AI Resume Builder is a powerful **AI-driven resume creation platform** that enables users to craft professional, ATS-optimized resumes in minutes. With **AI-assisted auto-fill**, **real-time design customization**, and **instant PDF exports**, users can build and personalize resumes effortlessly. The platform offers **multi-step dynamic forms, drag-and-drop sections, and subscription-based premium templates** to enhance the resume-building experience.
 
-🚀 **Live Demo:** [AI Resume Builder](https://your-live-link.vercel.app/)  
-📂 **GitHub Repo:** [dinesh-jaysiri/ai-resume-builder](https://github.com/dinesh-jaysiri/ai-resume-builder)  
+🚀 **Live Demo:** [AI Resume Builder]([https://your-live-link.vercel.app/](https://next-15-resume-builder.vercel.app/))  
 
 ---
 
